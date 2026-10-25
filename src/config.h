@@ -16,6 +16,8 @@ namespace settings {
 #define BoolSetting(name, sectionId, displayName, default) extern bool name;
 #include "settings.h"
 #undef BoolSetting
+
+extern std::string zdsrChannelName;
 }
 
 const char CONFIG_SECTION[] = "osara";

@@ -38,6 +38,11 @@ def makeConfigRc(target, source, env):
 		lines.append(
 			f'\tCONTROL {displayName}, {cid}, "Button", BS_AUTOCHECKBOX | WS_TABSTOP, 10, {y}, 390, 14\n')
 		y += 20
+	lines.append(
+		f'\tLTEXT "ZDSR independent channel &name:", -1, 10, {y}, 150, 10\n')
+	lines.append(
+		f'\tEDITTEXT 321, 165, {y - 1}, 235, 14, ES_AUTOHSCROLL\n')
+	y += 20
 	lines.append(f'\tDEFPUSHBUTTON "OK", IDOK, 10, {y}, 30, 14\n'
 		f'\tPUSHBUTTON "Cancel", IDCANCEL, 137, {y}, 40, 14\n')
 	y += 20

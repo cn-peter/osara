@@ -59,3 +59,6 @@ BoolSetting(moveCursorWithEdges, MAIN_SECTION,
 BoolSetting(useZdsrScreenReader, MAIN_SECTION,
 	"Use &ZDSR screen reader for messages",
 	true)
+BoolSetting(useZdsrIndependentChannel, MAIN_SECTION,
+	"Use an &independent channel for ZDSR messages",
+	false)

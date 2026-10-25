@@ -16,6 +16,9 @@
 #include "midiEditorCommands.h"
 #include "resource.h"
 #include "translation.h"
+#ifdef _WIN32
+#include "zdsr.h"
+#endif
 
 #ifdef _WIN32
 #include <commctrl.h>
@@ -28,6 +31,7 @@ namespace settings {
 #define BoolSetting(name, sectionId, displayName, default) bool name = default;
 #include "settings.h"
 #undef BoolSetting
+string zdsrChannelName;
 }
 
 namespace {
@@ -86,6 +90,8 @@ void loadConfig() {
 	settings::name = default ? v != '0' : v == '1';
 #include "settings.h"
 #undef BoolSetting
+	settings::zdsrChannelName = GetExtState(CONFIG_SECTION,
+		"zdsrChannelName");
 }
 
 void config_onOk(HWND dialog) {
@@ -95,6 +101,18 @@ void config_onOk(HWND dialog) {
 	SetExtState(CONFIG_SECTION, #name, settings::name ? "1" : "0", true);
 #include "settings.h"
 #undef BoolSetting
+	char channelName[256] = {};
+	GetDlgItemText(dialog, ID_CONFIG_ZDSR_CHANNEL, channelName,
+		sizeof(channelName));
+	settings::zdsrChannelName = channelName;
+	SetExtState(CONFIG_SECTION, "zdsrChannelName",
+		settings::zdsrChannelName.c_str(), true);
+#ifdef _WIN32
+	if (settings::useZdsrScreenReader) {
+		initializeZdsr(settings::useZdsrIndependentChannel,
+			settings::zdsrChannelName);
+	}
+#endif
 }
 
 INT_PTR CALLBACK config_dialogProc(HWND dialog, UINT msg, WPARAM wParam,
@@ -128,6 +146,8 @@ void cmdConfig(int command) {
 		settings::name ? BST_CHECKED : BST_UNCHECKED);
 #include "settings.h"
 #undef BoolSetting
+	SetDlgItemText(dialog, ID_CONFIG_ZDSR_CHANNEL,
+		settings::zdsrChannelName.c_str());
 	ShowWindow(dialog, SW_SHOWNORMAL);
 }
 

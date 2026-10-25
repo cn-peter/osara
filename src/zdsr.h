@@ -8,5 +8,7 @@
 
 #include <string>
 
-bool sendZdsrMessage(const std::string& message, bool interrupt = true);
+bool initializeZdsr(bool independentChannel, const std::string& channelName);
+bool sendZdsrMessage(const std::string& message, bool interrupt,
+	bool independentChannel, const std::string& channelName);
 void terminateZdsr();

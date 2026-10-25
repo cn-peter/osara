@@ -3697,6 +3697,14 @@ msgid "Use &ZDSR screen reader for messages"
 msgstr "使用争渡读屏输出消息(&Z)"
 
 msgctxt "OSARA Configuration"
+msgid "Use an &independent channel for ZDSR messages"
+msgstr "使用争渡独立语音通道输出消息(&I)"
+
+msgctxt "OSARA Configuration"
+msgid "ZDSR independent channel &name:"
+msgstr "争渡独立通道名称(&N)："
+
+msgctxt "OSARA Configuration"
 msgid "OK"
 msgstr "确定(&O)"
 

@@ -104,7 +104,8 @@ void _outputMessage(const string& message, bool interrupt) {
 		// A message this early isn't useful anyway, so just ignore it.
 		return;
 	}
-	if (settings::useZdsrScreenReader && sendZdsrMessage(message, interrupt)) {
+	if (settings::useZdsrScreenReader && sendZdsrMessage(message, interrupt,
+		settings::useZdsrIndependentChannel, settings::zdsrChannelName)) {
 		return;
 	}
 	if (shouldUseUiaNotifications()) {
@@ -6777,6 +6778,10 @@ IReaperControlSurface* surface = nullptr;
 void delayedInit() {
 #ifdef _WIN32
 	initializeUia();
+	if (settings::useZdsrScreenReader) {
+		initializeZdsr(settings::useZdsrIndependentChannel,
+			settings::zdsrChannelName);
+	}
 #endif
 	surface = createSurface();
 	plugin_register("csurf_inst", (void*)surface);

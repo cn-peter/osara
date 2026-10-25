@@ -22,8 +22,12 @@ constexpr WCHAR ZDSR_DLL_PATH[] =
 #endif
 
 HMODULE zdsrDll = nullptr;
+InitTtsFn initTts = nullptr;
 SpeakFn speak = nullptr;
 bool loadAttempted = false;
+bool ttsInitialized = false;
+bool ttsUsesIndependentChannel = false;
+std::string ttsChannelName;
 
 std::wstring widen(const std::string& text) {
 	if (text.empty()) {
@@ -55,21 +59,51 @@ void loadZdsr() {
 	if (!zdsrDll) {
 		return;
 	}
-	auto initTts = reinterpret_cast<InitTtsFn>(
+	initTts = reinterpret_cast<InitTtsFn>(
 		GetProcAddress(zdsrDll, "InitTTS"));
 	speak = reinterpret_cast<SpeakFn>(GetProcAddress(zdsrDll, "Speak"));
-	if (!initTts || !speak || initTts(0, nullptr, TRUE) != 0) {
+	if (!initTts || !speak) {
 		FreeLibrary(zdsrDll);
 		zdsrDll = nullptr;
+		initTts = nullptr;
 		speak = nullptr;
 	}
 }
 
+bool initializeTts(bool independentChannel, const std::string& channelName) {
+	loadZdsr();
+	if (!initTts) {
+		return false;
+	}
+	if (ttsInitialized && ttsUsesIndependentChannel == independentChannel &&
+		(!independentChannel || ttsChannelName == channelName)) {
+		return true;
+	}
+	std::wstring wideChannelName;
+	if (independentChannel && !channelName.empty()) {
+		wideChannelName = widen(channelName);
+	}
+	if (initTts(independentChannel ? 1 : 0,
+		wideChannelName.empty() ? nullptr : wideChannelName.c_str(), TRUE) != 0) {
+		ttsInitialized = false;
+		return false;
+	}
+	ttsInitialized = true;
+	ttsUsesIndependentChannel = independentChannel;
+	ttsChannelName = channelName;
+	return true;
+}
+
 } // namespace
 
-bool sendZdsrMessage(const std::string& message, bool interrupt) {
-	loadZdsr();
-	if (!speak || message.empty()) {
+bool initializeZdsr(bool independentChannel, const std::string& channelName) {
+	return initializeTts(independentChannel, channelName);
+}
+
+bool sendZdsrMessage(const std::string& message, bool interrupt,
+	bool independentChannel, const std::string& channelName
+) {
+	if (message.empty() || !initializeTts(independentChannel, channelName)) {
 		return false;
 	}
 	return speak(widen(message).c_str(), interrupt ? TRUE : FALSE) == 0;
@@ -80,5 +114,8 @@ void terminateZdsr() {
 		FreeLibrary(zdsrDll);
 	}
 	zdsrDll = nullptr;
+	initTts = nullptr;
 	speak = nullptr;
+	ttsInitialized = false;
+	ttsChannelName.clear();
 }
