@@ -56,3 +56,6 @@ BoolSetting(reportSurfaceChanges, MAIN_SECTION,
 BoolSetting(moveCursorWithEdges, MAIN_SECTION,
 	"Move cursor relative to adjusting &edges of items and time selection",
 	false)
+BoolSetting(useZdsrScreenReader, MAIN_SECTION,
+	"Use &ZDSR screen reader for messages",
+	true)

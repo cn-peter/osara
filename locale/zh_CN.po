@@ -3693,6 +3693,10 @@ msgid "Move cursor relative to adjusting &edges of items and time selection"
 msgstr "调整对象/选区的边缘时，编辑光标相应移动(&E)"
 
 msgctxt "OSARA Configuration"
+msgid "Use &ZDSR screen reader for messages"
+msgstr "使用争渡读屏输出消息(&Z)"
+
+msgctxt "OSARA Configuration"
 msgid "OK"
 msgstr "确定(&O)"
 

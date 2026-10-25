@@ -16,6 +16,7 @@
 // We only need this on Windows and it apparently causes compilation issues on Mac.
 #include <codecvt>
 #include "uia.h"
+#include "zdsr.h"
 #else
 #include "osxa11y_wrapper.h" // NSA11y wrapper for OS X accessibility API
 #endif
@@ -101,6 +102,9 @@ void _outputMessage(const string& message, bool interrupt) {
 		// #1173: This is very early in startup and we haven't called initializeUia()
 		// yet. We can't call it now, but we also don't want to fall back to MSAA.
 		// A message this early isn't useful anyway, so just ignore it.
+		return;
+	}
+	if (settings::useZdsrScreenReader && sendZdsrMessage(message, interrupt)) {
 		return;
 	}
 	if (shouldUseUiaNotifications()) {
@@ -7111,6 +7115,7 @@ REAPER_PLUGIN_DLL_EXPORT int REAPER_PLUGIN_ENTRYPOINT(REAPER_PLUGIN_HINSTANCE hI
 		UnhookWindowsHookEx(keyboardHook);
 		UnhookWinEvent(winEventHook);
 		terminateUia();
+		terminateZdsr();
 		accPropServices = nullptr;
 #else
 		NSA11yWrapper::destroy();
